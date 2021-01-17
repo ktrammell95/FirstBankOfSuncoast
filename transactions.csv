@@ -6,3 +6,6 @@ Savings,Withdrawal,5
 Checking,Withdrawal,20
 savings,deposit,900
 checking,deposit,23
+checking,deposit,500
+checking,deposit,566
+checking,withdrawal,600

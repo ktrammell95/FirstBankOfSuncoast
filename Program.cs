@@ -18,16 +18,18 @@ namespace FirstBankOfSuncoast
     class Program
     {
 
-        static List<Transaction> ReadTransactions(string nameOfFileToReadTransactionsFrom)
-        {
-            using var fileReader = new StreamReader(nameOfFileToReadTransactionsFrom);
-            using var csvReader = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-
-            return csvReader.GetRecords<Transaction>().ToList();
-
-        }
         static void Main(string[] args)
         {
+            static List<Transaction> ReadTransactions(string nameOfFileToReadTransactionsFrom)
+            {
+                using var fileReader = new StreamReader(nameOfFileToReadTransactionsFrom);
+                using var csvReader = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+                return csvReader.GetRecords<Transaction>().ToList();
+
+                fileReader.Close();
+            }
+
             List<Transaction> transactions = ReadTransactions("transactions.csv");
 
             static void BannerMessage(string message)
@@ -53,55 +55,65 @@ namespace FirstBankOfSuncoast
                 Console.WriteLine("*******************************");
 
             };
-
             BannerMessage("Welcome to First Bank of Suncoast");
 
-            Console.WriteLine("Would you like to make a Deposit or Withdrawal?");
-            var newTransactionType = Console.ReadLine();
-            // Console.WriteLine(newTransactionType);
 
-            if (newTransactionType == "Deposit" || newTransactionType == "deposit" || newTransactionType == "Checking" || newTransactionType == "checking")
+            bool hasQuit = false;
+            while (hasQuit == false)
             {
-                Console.WriteLine("Please select an account:");
+
+                Console.WriteLine("Please select an Account Type or Cancel to exit:");
                 Console.WriteLine("- Checking");
                 Console.WriteLine("- Savings");
+                Console.WriteLine("- Cancel");
                 var newAccountType = Console.ReadLine();
 
-                if (newAccountType == "Savings" || newAccountType == "savings" || newAccountType == "Checking" || newAccountType == "checking")
+                // Console.WriteLine(newTransactionType);
+                if (newAccountType == "Cancel" || newAccountType == "cancel")
                 {
-                    // Console.WriteLine(newAccountType);
-                    Console.WriteLine("Enter a $ amount");
-                    var newTransactionValue = Console.ReadLine();
+                    hasQuit = true;
+                }
+                else if (newAccountType == "Savings" || newAccountType == "savings" || newAccountType == "Checking" || newAccountType == "checking")
+                {
+                    Console.WriteLine("Would you like to make a Deposit or Withdrawal?");
+                    var newTransactionType = Console.ReadLine();
 
-                    var newTransaction = new Transaction()
+                    if (newTransactionType == "Deposit" || newTransactionType == "deposit" || newTransactionType == "Withdrawal" || newTransactionType == "withdrawal")
                     {
-                        AccountType = newAccountType,
-                        TransactionType = newTransactionType,
-                        TransactionValue = newTransactionValue,
-                    };
-                    transactions.Add(newTransaction);
+                        // Console.WriteLine(newAccountType);
+                        Console.WriteLine("Enter a $ amount");
+                        var newTransactionValue = Console.ReadLine();
 
-                    foreach (var transaction in transactions)
-                    {
-                        Console.WriteLine($"{transaction.TransactionType} ${transaction.TransactionValue} into {transaction.AccountType} ");
-                    };
+                        var newTransaction = new Transaction()
+                        {
+                            AccountType = newAccountType,
+                            TransactionType = newTransactionType,
+                            TransactionValue = newTransactionValue,
+                        };
+                        transactions.Add(newTransaction);
 
-                    using (var fileWriter = new StreamWriter("transactions.csv"))
+                        foreach (var transaction in transactions)
+                        {
+                            Console.WriteLine($"{transaction.TransactionType} ${transaction.TransactionValue} into {transaction.AccountType} ");
+                        };
+
+                        using (var fileWriter = new StreamWriter("transactions.csv"))
+                        {
+                            var csvWriter = new CsvWriter(fileWriter, CultureInfo.InvariantCulture);
+                            csvWriter.WriteRecords(transactions);
+                        }
+                    }
+                    else
                     {
-                        var csvWriter = new CsvWriter(fileWriter, CultureInfo.InvariantCulture);
-                        csvWriter.WriteRecords(transactions);
+                        ErrorMessage("Invalid Account Type entered, process canceled.");
                     }
                 }
                 else
                 {
-                    ErrorMessage("Invalid Account Type entered, process canceled.");
+                    ErrorMessage("Invalid Transaction Type Entered, process canceled.");
                 }
             }
-            else
-            {
-                ErrorMessage("Invalid Transaction Type Entered, process canceled.");
-            }
-
         }
     }
 }
+
