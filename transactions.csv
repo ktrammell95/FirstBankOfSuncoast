@@ -1,0 +1,8 @@
+AccountType,TransactionType,TransactionValue
+Savings,Deposit,25
+Checking,Deposit,10
+Savings,Deposit,25
+Savings,Withdrawal,5
+Checking,Withdrawal,20
+savings,deposit,900
+checking,deposit,23

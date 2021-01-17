@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using CsvHelper;
 
 namespace FirstBankOfSuncoast
 {
@@ -15,37 +18,17 @@ namespace FirstBankOfSuncoast
     class Program
     {
 
+        static List<Transaction> ReadTransactions(string nameOfFileToReadTransactionsFrom)
+        {
+            using var fileReader = new StreamReader(nameOfFileToReadTransactionsFrom);
+            using var csvReader = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            return csvReader.GetRecords<Transaction>().ToList();
+
+        }
         static void Main(string[] args)
         {
-            var transactions = new List<Transaction>()
-            {
-                new Transaction() {
-                  AccountType = "Savings",
-                  TransactionType = "Deposit",
-                  TransactionValue = "25",
-                },
-                new Transaction() {
-                  AccountType = "Checking",
-                  TransactionType = "Deposit",
-                  TransactionValue = "10",
-                },
-                new Transaction() {
-                  AccountType = "Savings",
-                  TransactionType = "Deposit",
-                  TransactionValue = "25",
-                },
-                new Transaction() {
-                  AccountType = "Savings",
-                  TransactionType = "Withdrawal",
-                  TransactionValue = "5",
-                },
-                new Transaction() {
-                  AccountType = "Checking",
-                  TransactionType = "Withdrawal",
-                  TransactionValue = "20",
-                },
-
-            };
+            List<Transaction> transactions = ReadTransactions("transactions.csv");
 
             static void BannerMessage(string message)
             {
@@ -58,6 +41,17 @@ namespace FirstBankOfSuncoast
                 Console.WriteLine("*******************************");
                 Console.WriteLine();
                 Console.WriteLine();
+            };
+
+            static void ErrorMessage(string message)
+            {
+
+                Console.WriteLine("*******************************");
+                Console.WriteLine();
+                Console.WriteLine(message);
+                Console.WriteLine();
+                Console.WriteLine("*******************************");
+
             };
 
             BannerMessage("Welcome to First Bank of Suncoast");
@@ -91,18 +85,22 @@ namespace FirstBankOfSuncoast
                     {
                         Console.WriteLine($"{transaction.TransactionType} ${transaction.TransactionValue} into {transaction.AccountType} ");
                     };
+
+                    using (var fileWriter = new StreamWriter("transactions.csv"))
+                    {
+                        var csvWriter = new CsvWriter(fileWriter, CultureInfo.InvariantCulture);
+                        csvWriter.WriteRecords(transactions);
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Invalid Account Type entered, process canceled.");
+                    ErrorMessage("Invalid Account Type entered, process canceled.");
                 }
             }
             else
             {
-                Console.WriteLine("Invalid Transaction Type Entered, process canceled.");
+                ErrorMessage("Invalid Transaction Type Entered, process canceled.");
             }
-
-
 
         }
     }
