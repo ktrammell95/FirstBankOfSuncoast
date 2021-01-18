@@ -66,7 +66,7 @@ namespace FirstBankOfSuncoast
                 Console.WriteLine("- Checking: Deposits & Withdrawals");
                 Console.WriteLine("- View: View All Transactions");
                 Console.WriteLine("- Balance: Check Balance");
-                Console.WriteLine("- Cancel: Leave Application");
+                Console.WriteLine("- Quit: Leave Application");
                 var newAccountType = Console.ReadLine();
 
                 // Console.WriteLine(newTransactionType);
@@ -224,7 +224,7 @@ namespace FirstBankOfSuncoast
                     Console.WriteLine("**********");
                     Console.WriteLine();
                 }
-                else if (newAccountType == "Cancel" || newAccountType == "cancel")
+                else if (newAccountType == "Quit" || newAccountType == "quit")
                 {
                     hasQuit = true;
                     BannerMessage("Have a great day!");
